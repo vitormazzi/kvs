@@ -85,9 +85,19 @@ store_kai
 {version,"KVS KAI PURE XEN"}
 </code></pre>
 
+<p>Create database for single node:</p>
+
+<pre><code>3&gt; kvs:join().
+</code></pre>
+
+<p>Create database joining to existing cluster:</p>
+
+<pre><code>3&gt; kvs:join('kvs@synrc.com').
+</code></pre>
+
 <p>Check table packages included into the schema:</p>
 
-<pre><code>3&gt; kvs:dir().
+<pre><code>4&gt; kvs:dir().
 [kvs_user,kvs_product,kvs_membership,kvs_payment,kvs_feed,
  kvs_acl,kvs_account,kvs_group]
 </code></pre>
@@ -172,6 +182,7 @@ Riak and KAI backends don't need it. Group you table into table packages
 represented as modules with handle_notice API.</p>
 
 <pre><code>-module(kvs_box).
+-inclue_lib("kvs/include/kvs.hrl").
 -record(box,{id,user,email}).
 -record(box_subscription,{who,whom}).
 init(Backend=store_mnesia) -&gt;
