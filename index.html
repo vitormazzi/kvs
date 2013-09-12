@@ -68,8 +68,103 @@ But some KV storages are not supporting secondary indexes add those backends car
 <ul>
 <li>Mnesia</li>
 <li>Riak</li>
-<li>CouchDB</li>
+<li>KAI</li>
 </ul><h2>
+<a name="configuring" class="anchor" href="#configuring"><span class="octicon octicon-link"></span></a>Configuring</h2>
+
+<p>First of all you need to tune your backend in the kvs application:</p>
+
+<pre><code>{kvs, {dba,store_kai}},
+</code></pre>
+
+<p>Try to check it:</p>
+
+<pre><code>1&gt; kvs:config(dba).
+store_kai
+2&gt; kvs:version().
+{version,"KVS KAI PURE XEN"}
+</code></pre>
+
+<p>Check table packages included into the schema:</p>
+
+<pre><code>3&gt; kvs:dir().
+[kvs_user,kvs_product,kvs_membership,kvs_payment,kvs_feed,
+ kvs_acl,kvs_account,kvs_group]
+</code></pre>
+
+<h2>
+<a name="operations" class="anchor" href="#operations"><span class="octicon octicon-link"></span></a>Operations</h2>
+
+<p>Try to add some data:</p>
+
+<pre><code>1&gt; rr(kvs).
+2&gt; kvs:put(#user{id="maxim@synrc.com"}).
+ok
+3&gt; kvs:get(user,"maxim@synrc.com").
+#user{id = "maxim@synrc.com",container = feed,...}
+4&gt; kvs:put(#user{id="doxtop@synrc.com"}).
+5&gt; length(kvs:all(user)).
+2
+</code></pre>
+
+<h2>
+<a name="polymorphic-records" class="anchor" href="#polymorphic-records"><span class="octicon octicon-link"></span></a>Polymorphic Records</h2>
+
+<p>The data in KVS represented as plain Erlang records. The first element of the tuple
+as usual indicates the name of bucket. And the second element usually corresponds
+to the index key field. Additional secondary indexes could be applied for stores
+that supports 2i, e.g. kai, mnesia, riak.</p>
+
+<pre><code>1 record_name -- user, groups, acl, etc... table name -- element(1, Rec).
+2 id          -- index key -- element(2, Rec).
+</code></pre>
+
+<h2>
+<a name="iterators" class="anchor" href="#iterators"><span class="octicon octicon-link"></span></a>Iterators</h2>
+
+<p>All record could be chained into the double-linked lists in the database.
+So you can inherit from the ITERATOR record just like that:</p>
+
+<pre><code>-record(acl_entry, {?ITERATOR(acl),
+    entry_id,
+    acl_id,
+    accessor,
+    action}).
+</code></pre>
+
+<p>The layout of iterators are following:</p>
+
+<pre><code>1 record_name -- table name, like
+2 id          -- index key
+3 container   -- container name
+4 feed_id     -- feed id
+5 prev        -- poniter to previous object in list
+6 next        -- next
+7 feeds       -- subfeeds
+8 guard,      -- aux field
+9 ...
+</code></pre>
+
+<p>This means your table will support add/remove operations to lists.</p>
+
+<pre><code>1&gt; kvs:add(#user{id="mes@ua.fm"}).
+2&gt; kvs:add(#user{id="dox@ua.fm"}).
+</code></pre>
+
+<h2>
+<a name="containers" class="anchor" href="#containers"><span class="octicon octicon-link"></span></a>Containers</h2>
+
+<p>If you are using iterators records this automatically means you are using containers.
+Containers are just boxes for storing top/heads of the linked lists. Here is layout
+of containers:</p>
+
+<pre><code>1 record_name   -- container name
+2 id            -- unique id
+3 top           -- pointer to the list's head
+4 entries_count -- number of elements in list
+</code></pre>
+
+<h2>
 <a name="credits" class="anchor" href="#credits"><span class="octicon octicon-link"></span></a>Credits</h2>
 
 <ul>
