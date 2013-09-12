@@ -175,6 +175,18 @@ So you can inherit from the ITERATOR record just like that:</p>
 2&gt; kvs:add(#user{id="dox@ua.fm"}).
 </code></pre>
 
+<p>Read the chain (undefined means all)</p>
+
+<pre><code>3&gt; kvs:entries(kvs:get(feed, users), user, undefined).
+[#user{id="mes@ua.fm"},#user{id="dox@ua.fm"}]
+</code></pre>
+
+<p>Read flat values by all keys from table:</p>
+
+<pre><code>4&gt; kvs:all(user).
+[#user{id="mes@ua.fm"},#user{id="dox@ua.fm"}]
+</code></pre>
+
 <h2>
 <a name="containers" class="anchor" href="#containers"><span class="octicon octicon-link"></span></a>Containers</h2>
 
