@@ -165,11 +165,44 @@ of containers:</p>
 </code></pre>
 
 <h2>
+<a name="extending-schema" class="anchor" href="#extending-schema"><span class="octicon octicon-link"></span></a>Extending Schema</h2>
+
+<p>Usually you need only specify custom mnesia indexes and tables tuning.
+Riak and KAI backends don't need it. Group you table into table packages
+represented as modules with handle_notice API.</p>
+
+<pre><code>-module(kvs_box).
+-record(box,{id,user,email}).
+-record(box_subscription,{who,whom}).
+init(Backend=store_mnesia) -&gt;
+    ?CREATE_TAB(box),
+    ?CREATE_TAB(box_subscription),
+    Backend:add_table_index(box, user),
+    Backend:add_table_index(box, email),
+    Backend:add_table_index(box_subscription, who),
+    Backend:add_table_index(box_subscription, whom);
+init(_) -&gt; ok.
+</code></pre>
+
+<p>And plug it into schema config:</p>
+
+<pre><code>{kvs, {schema,[kvs_user,kvs_acl,kvs_account,...,kvs_box]}},
+</code></pre>
+
+<p>And on database init</p>
+
+<pre><code>1&gt; kvs:join().
+</code></pre>
+
+<p>It will create your custom schema.</p>
+
+<h2>
 <a name="credits" class="anchor" href="#credits"><span class="octicon octicon-link"></span></a>Credits</h2>
 
 <ul>
 <li>Maxim Sokhatsky</li>
 <li>Andrii Zadorozhnii</li>
+<li>Vladimir Kirillov</li>
 <li>Alex Kalenuk</li>
 <li>Sergey Polkovnikov</li>
 </ul><p>OM A HUM</p>
