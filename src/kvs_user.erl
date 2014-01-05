@@ -21,6 +21,7 @@ init(Backend) ->
     Backend:add_table_index(user, googleplus_id),
     Backend:add_table_index(user, twitter_id),
     Backend:add_table_index(user, github_id),
+    Backend:add_table_index(user, passaporte_web_id),
     Backend:add_table_index(subscription, who),
     Backend:add_table_index(subscription, whom),
     ok.

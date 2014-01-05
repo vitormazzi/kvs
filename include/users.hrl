@@ -10,6 +10,7 @@
         twitter_id,
         googleplus_id,
         github_id,
+        passaporte_web_id,
         auth,
         avatar,
         name = undefined,
@@ -91,6 +92,7 @@
 -record(facebook_oauth, {user_id, access_token}).
 -record(googleplus_oauth, {user_id, access_token}).
 -record(github_oauth, {user_id, access_token}).
+-record(passaporte_web_oauth, {user_id, token, secret}).
 
 -define(ACTIVE_USERS_TOP_N, 12).
 
